@@ -1,27 +1,10 @@
 import re
-import requests
 from bs4 import BeautifulSoup
-from time import sleep
 import loto6_index
 
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-
-def getSoup(url):
-    options = webdriver.ChromeOptions()
-    #options.add_argument('--headless')
-    driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
-    driver.implicitly_wait(10)
-    driver.get(url)
-    sleep(1)
-    html = driver.page_source.encode('utf-8')
-    return BeautifulSoup(html, "html.parser")
-
 target = 'https://www.mizuhobank.co.jp/retail/takarakuji/check/loto/backnumber/index.html'
-soup = getSoup(target)
+soup = loto6_index.getSoup(target)
 items= soup.find_all('table', class_='typeTK')
-#print(items)
-
 
 el_url = []
 for item in items:
@@ -33,6 +16,42 @@ for item in items:
         month = temp_date[1]
 
         el_url = 'https://www.mizuhobank.co.jp/retail/takarakuji/check/loto/loto6/index.html?year='+year+'&month='+month
-        #el_url.append('https://www.mizuhobank.co.jp/retail/takarakuji/check/loto/loto6/index.html?year='+year+'&month='+month)
-        #print(el_date,el_url)
-        loto6_index.getData(el_url)
+        #loto6_index.getData(el_url)
+
+for item in items:
+    elements = item.find_all('tr', class_='js-backnumber-temp-b')
+    for el in elements:
+        links = el.find_all('a')
+        temp_issue = re.findall(r"\d+", links[1].text)
+
+        if(int(temp_issue[0])<461):
+            el_url = 'https://www.mizuhobank.co.jp/retail/takarakuji/check/loto/backnumber/loto6'+ temp_issue[0].zfill(4) +'.html'
+        else:
+            el_url = 'https://www.mizuhobank.co.jp/retail/takarakuji/check/loto/backnumber/detail.html?fromto='+temp_issue[0]+'_'+temp_issue[1]+'&type=loto6'
+            # soup = loto6_index.getSoup(el_url)
+            # rows = soup.find_all('tr', class_='js-lottery-backnumber-temp-pc')
+            # for row in rows:
+            #     tds = row.find_all('tr')
+            #     print(tds)
+            #     #issue = loto6_index.extractNum(row.find('th', class_='bgf7f7f7').text)
+            #     #date = row.find('td', class_='alnRight js-lottery-date').text
+            #
+
+        soup = loto6_index.getSoup(el_url)
+        rows = soup.find_all('tr')
+        #rows = soup.find_all('tr', class_='js-lottery-backnumber-temp-pc')
+        for row in rows:
+            th = row.find('th')
+            tds = row.find_all('td')
+            print(th,tds)
+
+#        print(temp_issue)
+
+
+def youbi(str):
+
+    str = '2022年8月15日'
+
+
+    return youbi
+
