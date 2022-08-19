@@ -16,7 +16,7 @@ for item in items:
         month = temp_date[1]
 
         el_url = 'https://www.mizuhobank.co.jp/retail/takarakuji/check/loto/loto6/index.html?year='+year+'&month='+month
-        #loto6_index.getData(el_url)
+        loto6_index.getData(el_url)
 
 for item in items:
     elements = item.find_all('tr', class_='js-backnumber-temp-b')
@@ -28,30 +28,19 @@ for item in items:
             el_url = 'https://www.mizuhobank.co.jp/retail/takarakuji/check/loto/backnumber/loto6'+ temp_issue[0].zfill(4) +'.html'
         else:
             el_url = 'https://www.mizuhobank.co.jp/retail/takarakuji/check/loto/backnumber/detail.html?fromto='+temp_issue[0]+'_'+temp_issue[1]+'&type=loto6'
-            # soup = loto6_index.getSoup(el_url)
-            # rows = soup.find_all('tr', class_='js-lottery-backnumber-temp-pc')
-            # for row in rows:
-            #     tds = row.find_all('tr')
-            #     print(tds)
-            #     #issue = loto6_index.extractNum(row.find('th', class_='bgf7f7f7').text)
-            #     #date = row.find('td', class_='alnRight js-lottery-date').text
-            #
 
         soup = loto6_index.getSoup(el_url)
-        rows = soup.find_all('tr')
-        #rows = soup.find_all('tr', class_='js-lottery-backnumber-temp-pc')
+
+        table = soup.find('div', class_='spTableScroll sp-none')
+        rows = table.find_all('tr')
+
         for row in rows:
-            th = row.find('th')
-            tds = row.find_all('td')
-            print(th,tds)
-
-#        print(temp_issue)
-
-
-def youbi(str):
-
-    str = '2022年8月15日'
-
-
-    return youbi
-
+            th = row.find('th').text
+            if th != '回別':
+                data = []
+                data.append(loto6_index.extractNum(th))
+                tds = row.find_all('td')
+                for td in tds:
+                    data.append(td.text)
+                print(data)
+                loto6_index.writeCsv('test',data)
