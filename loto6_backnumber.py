@@ -26,12 +26,18 @@ for item in items:
 
         if(int(temp_issue[0])<461):
             el_url = 'https://www.mizuhobank.co.jp/retail/takarakuji/check/loto/backnumber/loto6'+ temp_issue[0].zfill(4) +'.html'
+            old_flg = 1
         else:
             el_url = 'https://www.mizuhobank.co.jp/retail/takarakuji/check/loto/backnumber/detail.html?fromto='+temp_issue[0]+'_'+temp_issue[1]+'&type=loto6'
+            old_flg = 0
 
         soup = loto6_index.getSoup(el_url)
 
-        table = soup.find('div', class_='spTableScroll sp-none')
+        if old_flg == 1:
+            table = soup.find('div', class_='spTableScroll sp-none')
+        else:
+            table = soup.find('div', class_='spTableScroll js-lottery-backnumber-list sp-none')
+
         rows = table.find_all('tr')
 
         for row in rows:
