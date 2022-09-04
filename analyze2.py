@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import statistics
 import matplotlib.pyplot as plt
 
 #【MAX_CONTINUE】同じ数字が何回連続で出るか
@@ -127,36 +128,53 @@ def getNeighborNum(data):
 
 
 
-# データの読み込み
-df = pd.read_csv('loto6_data.csv', encoding='shift_jis')
-
-# SepalLength列をndarrayに変換
-data = np.array(df.tail(100))
-#print(data)
-getMaxContinue(data)
-getNeighborNum(data)
 
 
-#
-# 【MAX_INTERVAL】
-# data_arr = [0] * XX
-#
-# // 数字毎
-# interval_arr[[] * XX]
-#
-# for row in rows:
-#
-#     map(lambda x: x + 1, data_arr)
-#     arr = row
-#
-#     for i in range(arr.length):
-#         // ここで間隔数を代入する
-#         interval_arr[arr[i] - 1].append(data_arr[arr[i] - 1])
-#
-#         data_arr[arr[i] - 1] = 0
-#         if (max_interval < max(data_arr)):
-#             max_interval = max(data_arr)
-#
+
+# 【MAX_INTERVAL】最大間隔
+
+def getMaXInterval(data):
+
+    data_arr = [0] * 43 #数字別最大間隔
+    max_arr = [0] * 43
+    mean_interval_arr = [0]*43
+    median_interval_arr = [0]*43
+
+    # 数字毎
+    interval_arr = [[] for i in range(43)]
+    max_interval_arr = [0]*43
+    rows = data
+    max_interval =0
+
+    for row in rows:
+
+        data_arr = list(map(lambda x: x + 1, data_arr))
+        arr = row[2:8]
+
+        for i in range(len(arr)):
+            if(max_interval_arr[arr[i]-1] < data_arr[arr[i]-1]):
+                max_interval_arr[arr[i] - 1] = data_arr[arr[i]-1]
+
+            #print(data_arr[arr[i]-1]-1)
+            interval_arr[arr[i]-1].append(data_arr[arr[i]-1]-1)
+            data_arr[arr[i] - 1] = 0
+            if (max_interval < max(data_arr)):
+                max_interval = max(data_arr)
+
+
+    for i in range(len(interval_arr)):
+        if(len(interval_arr[i])==0):
+            interval_arr[i].append(max_interval)
+
+        mean_interval_arr[i] = round(sum(interval_arr[i])/len(interval_arr[i]),1)
+        median_interval_arr[i] = statistics.median(interval_arr[i])
+
+
+    print('直近間隔:',data_arr)
+    print('最大間隔:',max_interval)
+    print('数字別最大間隔値:',max_interval_arr)
+    print('平均値:',mean_interval_arr)
+    print('中央値:',median_interval_arr)
 #
 # 【NUM_CORRELATION】
 # data_arr = [[0] * XX] * XX
@@ -201,3 +219,15 @@ getNeighborNum(data)
 #             data_arr[arr[i] * refer_arr[i] - 1] += 1
 #             neighbor_count[j] += 1
 #
+
+# データの読み込み
+df = pd.read_csv('loto6_data.csv', encoding='shift_jis')
+
+# SepalLength列をndarrayに変換
+data = np.array(df.tail(100))
+print(data)
+getMaxContinue(data)
+getNeighborNum(data)
+getMaXInterval(data)
+
+
